@@ -1,0 +1,123 @@
+#!/usr/bin/python
+import re
+import sys
+import random
+import numpy
+
+class ChangeAssembly:
+	########################################
+	# constructor
+	########################################
+	def __init__(self):
+		# assembly file list(str)
+		self.lines = []
+		# index for each label list(int)
+		self.labels = []
+		# section names list(str)
+		self.sec_name = []
+		self.sec_size = []
+
+	########################################
+	# FindInt(str line): 
+	# extract integer number from a string
+	########################################
+	def FindInt(self, line):
+		return re.findall(r'\d+', line)
+
+	########################################
+	# ReadAssembly(filename): 
+	# open the input file, returns
+	# 1. lines:  a list of str for the input file
+	# 2. self.labels: a list of int for each label's index
+	########################################
+	def ReadAssembly(self, filename):
+		file = open(filename, 'r')
+		self.lines = file.read().splitlines()
+		file.close()
+
+		for line in self.lines:
+			content = line.rsplit()
+			if content and re.search('[A-Za-z0-9]+\:', content[0]):
+				self.labels.append(self.lines.index(line))
+
+		for i in range(len(self.labels)):
+			if re.search("(?<=\.LBB)", self.lines[self.labels[i]]):
+
+				size = self.labels[i+1] - self.labels[i] - 1		
+
+				for j in range(self.labels[i]+1, self.labels[i+1]):
+					if re.search("^\s+\@", self.lines[j]):
+						size = size - 1			
+	
+				for j in range(i+1, len(self.labels)):
+					if re.search("(?<=\.LBB)", self.lines[self.labels[j]]):
+						break		
+					if re.search("(?<=\.LCPI)", self.lines[self.labels[j]]):
+						size = size + 1
+				self.sec_size.append(size)
+
+
+	########################################
+	# insert_section(lines, self.labels): 
+	# insert section declaration for each basic block
+	########################################
+	def InsertSections(self):
+		for i in range(len(self.labels)):
+			if re.search("(?<=\.LBB)", self.lines[self.labels[i]]):
+				sec_num  = self.FindInt(self.lines[self.labels[i]].rsplit()[0])
+				assert(len(sec_num) == 2)
+				sec_name = '.section bb' + sec_num[0] + '_' + sec_num[1]
+				self.sec_name.append('bb' + sec_num[0] + '_' + sec_num[1])
+
+				if int(sec_num[1]) == 0:
+					self.lines.insert(self.labels[i-2], sec_name)
+					for j in range(i-2, len(self.labels)):
+						self.labels[j] = self.labels[j] + 1
+				else:
+					self.lines.insert(self.labels[i], sec_name)
+					for j in range(i, len(self.labels)):
+						self.labels[j] = self.labels[j] + 1
+
+	########################################
+	# change the name of the .text section
+	########################################
+	def ChangeText(self):
+		for i in range(len(self.lines)):
+			if self.lines[i] and (self.lines[i].rsplit()[0] == '.text'):
+				self.lines[i] = '.section ' + sys.argv[1] 
+				self.sec_name.insert(0, sys.argv[1])
+
+	########################################
+	# write the assembly to file
+	########################################
+	def WriteAssembly(self, filename):
+		file = open(filename, 'w+')
+		for line in self.lines:
+			file.write("%s\n" % line)		
+		file.close()
+
+
+################################################################
+# add relocatable sections for each bb, dump the change to a file
+################################################################
+assert (len(sys.argv) == 4)
+assembly = ChangeAssembly()
+assembly.ReadAssembly(sys.argv[2])
+assembly.ChangeText()
+assembly.InsertSections()
+assembly.WriteAssembly(sys.argv[3])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

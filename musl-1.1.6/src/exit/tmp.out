@@ -1,0 +1,90 @@
+
+exit.o:     file format elf32-littlearm
+
+
+Disassembly of section bb0_0:
+
+00000000 <exit>:
+   0:	e92d4070 	push	{r4, r5, r6, lr}
+   4:	eafffffe 	b	0 <exit>
+
+Disassembly of section bb0_1:
+
+00000000 <bb0_1>:
+   0:	e1a04000 	mov	r4, r0
+   4:	ebfffffe 	bl	0 <bb0_1>
+   8:	e59f5004 	ldr	r5, [pc, #4]	; 14 <bb0_1+0x14>
+   c:	e59f6004 	ldr	r6, [pc, #4]	; 18 <bb0_1+0x18>
+  10:	eafffffe 	b	0 <bb0_1>
+	...
+
+Disassembly of section bb0_2:
+
+00000000 <bb0_2>:
+   0:	e5350004 	ldr	r0, [r5, #-4]!
+   4:	e1a0e00f 	mov	lr, pc
+   8:	e1a0f000 	mov	pc, r0
+   c:	eafffffe 	b	0 <bb0_2>
+
+Disassembly of section bb0_3:
+
+00000000 <bb0_3>:
+   0:	e1550006 	cmp	r5, r6
+   4:	8afffffe 	bhi	0 <bb0_3>
+   8:	eafffffe 	b	0 <bb0_3>
+
+Disassembly of section bb0_4:
+
+00000000 <bb0_4>:
+   0:	ebfffffe 	bl	0 <bb0_4>
+   4:	ebfffffe 	bl	0 <bb0_4>
+   8:	e1a00004 	mov	r0, r4
+   c:	ebfffffe 	bl	0 <_Exit>
+
+Disassembly of section .ARM.exidxbb0_4:
+
+00000000 <.ARM.exidxbb0_4>:
+   0:	00000000 	andeq	r0, r0, r0
+   4:	00000001 	andeq	r0, r0, r1
+
+Disassembly of section bb1_0:
+
+00000000 <__funcs_on_exit>:
+   0:	e1a0f00e 	mov	pc, lr
+
+Disassembly of section .ARM.exidxbb1_0:
+
+00000000 <.ARM.exidxbb1_0>:
+   0:	00000000 	andeq	r0, r0, r0
+   4:	00000001 	andeq	r0, r0, r1
+
+Disassembly of section .comment:
+
+00000000 <.comment>:
+   0:	616c6300 	cmnvs	ip, r0, lsl #6
+   4:	7620676e 	strtvc	r6, [r0], -lr, ror #14
+   8:	69737265 	ldmdbvs	r3!, {r0, r2, r5, r6, r9, ip, sp, lr}^
+   c:	33206e6f 	teqcc	r0, #1776	; 0x6f0
+  10:	302e372e 	eorcc	r3, lr, lr, lsr #14
+  14:	72742820 	rsbsvc	r2, r4, #2097152	; 0x200000
+  18:	206b6e75 	rsbcs	r6, fp, r5, ror lr
+  1c:	31393232 	teqcc	r9, r2, lsr r2
+  20:	00293634 	eoreq	r3, r9, r4, lsr r6
+
+Disassembly of section .ARM.attributes:
+
+00000000 <.ARM.attributes>:
+   0:	00003241 	andeq	r3, r0, r1, asr #4
+   4:	61656100 	cmnvs	r5, r0, lsl #2
+   8:	01006962 	tsteq	r0, r2, ror #18
+   c:	00000028 	andeq	r0, r0, r8, lsr #32
+  10:	302e3243 	eorcc	r3, lr, r3, asr #4
+  14:	35050039 	strcc	r0, [r5, #-57]	; 0x39
+  18:	06004554 	undefined instruction 0x06004554
+  1c:	09010801 	stmdbeq	r1, {r0, fp}
+  20:	12011101 	andne	r1, r1, #1073741824	; 0x40000000
+  24:	15011404 	strne	r1, [r1, #-1028]	; 0x404
+  28:	18031701 	stmdane	r3, {r0, r8, r9, sl, ip}
+  2c:	1a011901 	bne	46438 <exit+0x46438>
+  30:	Address 0x00000030 is out of bounds.
+
